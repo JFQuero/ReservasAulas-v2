@@ -2,18 +2,24 @@ package org.iesalandalus.programacion.reservasaulas.modelo.dominio;
 
 public class Aula {
 
+	private static final float PUNTOS_POR_PUESTO = 0.5f;
+	private static final int MIN_PUESTOS = 10;
+	private static final int MAX_PUESTOS = 100;
 	private String nombre;
+	private int puestos;
 
 	/* Constructores */
-	public Aula(String nombre) {
+	public Aula(String nombre, int puestos) {
 		setNombre(nombre);
+		setPuestos(puestos);
 	}
 
 	public Aula(Aula aula) {
 		if (aula == null) {
 			throw new IllegalArgumentException("No se puede copiar un aula nula.");
 		}
-		setNombre(aula.nombre);
+		setNombre(aula.getNombre());
+		setPuestos(aula.getPuestos());
 	}
 
 	/* Metodos */
@@ -29,6 +35,21 @@ public class Aula {
 			throw new IllegalArgumentException("El nombre del aula no puede estar vacío.");
 		}
 		this.nombre = nombre;
+	}
+
+	private void setPuestos(int puestos) {
+		if (puestos < MIN_PUESTOS || puestos > MAX_PUESTOS) {
+			throw new IllegalArgumentException("El número de puestos no es correcto.");
+		}
+		this.puestos = puestos;
+	}
+
+	public int getPuestos() {
+		return puestos;
+	}
+
+	public float getPuntos() {
+		return (puestos * PUNTOS_POR_PUESTO);
 	}
 
 	/* Otros Metodos */
@@ -59,6 +80,7 @@ public class Aula {
 
 	@Override
 	public String toString() {
-		return "[nombre=" + nombre + "]";
+		return String.format("[nombre=%s, puestos=%s]", nombre, puestos);
 	}
+
 }
