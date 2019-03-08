@@ -1,5 +1,9 @@
 package org.iesalandalus.programacion.reservasaulas.modelo.dominio;
 
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.Permanencia;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.PermanenciaPorHora;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.PermanenciaPorTramo;
+
 public class Reserva {
 
 	private Profesor profesor;
@@ -26,36 +30,49 @@ public class Reserva {
 
 	/* Metodos */
 	public Profesor getProfesor() {
-		return profesor;
+		return new Profesor(profesor);
 	}
 
 	private void setProfesor(Profesor profesor) {
 		if (profesor == null) {
 			throw new IllegalArgumentException("La reserva debe estar a nombre de un profesor.");
 		}
-		this.profesor = profesor;
+		this.profesor = new Profesor(profesor);
 	}
 
 	public Aula getAula() {
-		return aula;
+		return new Aula(aula);
 	}
 
 	private void setAula(Aula aula) {
 		if (aula == null) {
 			throw new IllegalArgumentException("La reserva debe ser para un aula concreta.");
 		}
-		this.aula = aula;
+		this.aula = new Aula(aula);
 	}
 
 	public Permanencia getPermanencia() {
-		return permanencia;
+		if (permanencia instanceof PermanenciaPorTramo) {
+			return new PermanenciaPorTramo((PermanenciaPorTramo) permanencia);
+		} else {
+			return new PermanenciaPorHora((PermanenciaPorHora) permanencia);
+		}
 	}
 
 	private void setPermanencia(Permanencia permanencia) {
 		if (permanencia == null) {
 			throw new IllegalArgumentException("La reserva se debe hacer para una permanencia concreta.");
 		}
-		this.permanencia = permanencia;
+		if (permanencia instanceof PermanenciaPorTramo) {
+			this.permanencia = new PermanenciaPorTramo((PermanenciaPorTramo) permanencia);
+		} else {
+			this.permanencia = new PermanenciaPorHora((PermanenciaPorHora) permanencia);
+		}
+
+	}
+
+	public float getPuntos() {
+		return aula.getPuntos() + permanencia.getPuntos();
 	}
 
 	/* Otros Metodos */
@@ -92,6 +109,7 @@ public class Reserva {
 
 	@Override
 	public String toString() {
-		return "[profesor=" + profesor + ", aula=" + aula + ", permanencia=" + permanencia + "]";
+		return String.format("[profesor=%s, aula=%s, permanencia=%s, puntos=%s]", profesor, aula,
+				permanencia, getPuntos());
 	}
 }
