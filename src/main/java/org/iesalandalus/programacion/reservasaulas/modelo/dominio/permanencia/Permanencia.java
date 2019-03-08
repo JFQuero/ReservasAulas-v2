@@ -35,12 +35,12 @@ public abstract class Permanencia {
 
 	protected void setDia(String dia) {
 		if (dia == null) {
-			throw new NullPointerException("El día de una permanencia no puede ser nulo.");
+			throw new IllegalArgumentException("El día de una permanencia no puede ser nulo.");
 		}
 		try {
 			this.dia = LocalDate.parse(dia, FORMATO_DIA);
 		} catch (DateTimeParseException e) {
-			throw new IllegalArgumentException("El formato del día de permanencia no es correcto.");
+			throw new IllegalArgumentException("El formato del día de la permanencia no es correcto.");
 		}
 	}
 
