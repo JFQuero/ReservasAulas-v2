@@ -87,10 +87,12 @@ public class PermanenciaPorHora extends Permanencia {
 		return PUNTOS;
 	}
 
-	/* Otros Metodos */
 	@Override
 	public int hashCode() {
-		return Objects.hash(hora);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((hora == null) ? 0 : hora.hashCode());
+		return result;
 	}
 
 	@Override
@@ -105,7 +107,21 @@ public class PermanenciaPorHora extends Permanencia {
 			return false;
 		}
 		PermanenciaPorHora other = (PermanenciaPorHora) obj;
-		return Objects.equals(hora, other.hora);
+		if (dia == null) {
+			if (other.dia != null) {
+				return false;
+			}
+		} else if (!dia.equals(other.dia)) {
+			return false;
+		}
+		if (hora == null) {
+			if (other.hora != null) {
+				return false;
+			}
+		} else if (!hora.equals(other.hora)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

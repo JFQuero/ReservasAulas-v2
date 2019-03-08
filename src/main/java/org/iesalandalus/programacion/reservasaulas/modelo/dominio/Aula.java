@@ -52,7 +52,6 @@ public class Aula {
 		return (puestos * PUNTOS_POR_PUESTO);
 	}
 
-	/* Otros Metodos */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -63,18 +62,23 @@ public class Aula {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!(obj instanceof Aula)) {
 			return false;
+		}
 		Aula other = (Aula) obj;
 		if (nombre == null) {
-			if (other.nombre != null)
+			if (other.nombre != null) {
 				return false;
-		} else if (!nombre.equalsIgnoreCase(other.nombre))
+			}
+		} else if (!nombre.equals(other.nombre)) {
 			return false;
+		}
 		return true;
 	}
 

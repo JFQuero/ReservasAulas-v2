@@ -45,10 +45,12 @@ public class PermanenciaPorTramo extends Permanencia {
 		return PUNTOS;
 	}
 
-	/** Otros Metodos **/
 	@Override
 	public int hashCode() {
-		return Objects.hash(tramo);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((tramo == null) ? 0 : tramo.hashCode());
+		return result;
 	}
 
 	@Override
@@ -63,7 +65,17 @@ public class PermanenciaPorTramo extends Permanencia {
 			return false;
 		}
 		PermanenciaPorTramo other = (PermanenciaPorTramo) obj;
-		return tramo == other.tramo;
+		if (dia == null) {
+			if (other.dia != null) {
+				return false;
+			}
+		} else if (!dia.equals(other.dia)) {
+			return false;
+		}
+		if (tramo != other.tramo) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

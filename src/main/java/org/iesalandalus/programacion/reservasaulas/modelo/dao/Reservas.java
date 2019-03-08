@@ -1,18 +1,20 @@
 package org.iesalandalus.programacion.reservasaulas.modelo.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.naming.OperationNotSupportedException;
-
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.Aula;
-import org.iesalandalus.programacion.reservasaulas.modelo.dominio.Permanencia;
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.Profesor;
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.Reserva;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.Permanencia;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.PermanenciaPorHora;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.PermanenciaPorTramo;
 
 public class Reservas {
 
 	private List<Reserva> coleccionReservas;
+	private static final float MAX_PUNTOS_PROFESOR_MES = 200;
 
 	/* Constructores */
 	public Reservas() {
@@ -53,9 +55,61 @@ public class Reservas {
 		}
 		if (coleccionReservas.contains(reserva)) {
 			throw new OperationNotSupportedException("La reserva ya existe.");
-		} else {
-			coleccionReservas.add(new Reserva(reserva));
 		}
+		if (!esMesSiguienteOPosterior(reserva)) {
+			throw new OperationNotSupportedException(
+					"Sólo se pueden hacer reservas para el mes que viene o posteriores.");
+		}
+		if (getPuntosGastadosReserva(reserva) > MAX_PUNTOS_PROFESOR_MES) {
+			throw new OperationNotSupportedException(
+					"Esta reserva excede los puntos máximos por mes para dicho profesor.");
+		}
+		if (getReservaDia(reserva.getPermanencia().getDia()) != null) {
+			if (getReservaDia(reserva.getPermanencia().getDia()).getPermanencia() instanceof PermanenciaPorTramo
+					& reserva.getPermanencia() instanceof PermanenciaPorHora) {
+				throw new OperationNotSupportedException(
+						"Ya se ha realizado una reserva por tramo para este día y aula.");
+			}
+			if (getReservaDia(reserva.getPermanencia().getDia()).getPermanencia() instanceof PermanenciaPorHora
+					& reserva.getPermanencia() instanceof PermanenciaPorTramo) {
+				throw new OperationNotSupportedException(
+						"Ya se ha realizado una reserva por hora para este día y aula.");
+			}
+		}
+		coleccionReservas.add(new Reserva(reserva));
+
+	}
+
+	private boolean esMesSiguienteOPosterior(Reserva reserva) {
+		return (reserva.getPermanencia().getDia().getMonthValue() > LocalDate.now().getMonthValue());
+	}
+
+	private float getPuntosGastadosReserva(Reserva reserva) {
+		float sumaPuntos = 0;
+		for (Reserva puntos : getReservasProfesorMes(reserva.getProfesor(), reserva.getPermanencia().getDia())) {
+			sumaPuntos += puntos.getPuntos();
+		}
+		return sumaPuntos + reserva.getPuntos();
+	}
+
+	private List<Reserva> getReservasProfesorMes(Profesor profesor, LocalDate dia) {
+		List<Reserva> reservasProfesorMes = new ArrayList<>();
+		for (Reserva reserva : coleccionReservas) {
+			if (reserva.getProfesor().equals(profesor)
+					& reserva.getPermanencia().getDia().getMonth().equals(dia.getMonth())) {
+				reservasProfesorMes.add(new Reserva(reserva));
+			}
+		}
+		return reservasProfesorMes;
+	}
+
+	private Reserva getReservaDia(LocalDate dia) {
+		for (Reserva reserva : coleccionReservas) {
+			if (reserva.getPermanencia().getDia().equals(dia)) {
+				return new Reserva(reserva);
+			}
+		}
+		return null;
 	}
 
 	public Reserva buscar(Reserva reserva) {
