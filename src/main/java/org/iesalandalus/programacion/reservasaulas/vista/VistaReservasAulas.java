@@ -4,24 +4,28 @@ import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
-import org.iesalandalus.programacion.reservasaulas.modelo.ModeloReservasAulas;
+import org.iesalandalus.programacion.reservasaulas.controlador.ControladorReservasAulas;
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.*;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.Permanencia;
 
-public class IUTextual {
+public class VistaReservasAulas {
 
 	private static final String ERROR = "ERROR: ";
 	private static final String VACIO = "No hay reservas que listar.";
 	private static final String NOMBRE_VALIDO = "Juan Fernandez Quero";
 	private static final String CORREO_VALIDO = "correo@valido.com";
-	private ModeloReservasAulas modelo;
+	private ControladorReservasAulas controlador;
 
 	/* Constructores */
-	public IUTextual() {
-		modelo = new ModeloReservasAulas();
+	public VistaReservasAulas() {
 		Opcion.setVista(this);
 	}
 
 	/* Metodos */
+	public void setControlador(ControladorReservasAulas controlador) {
+		this.controlador = controlador;
+	}
+
 	public void comenzar() {
 		int ordinalOpcion;
 		do {
@@ -40,7 +44,7 @@ public class IUTextual {
 		Consola.mostrarCabecera("Insertar Aula");
 		try {
 			Aula aula = Consola.leerAula();
-			modelo.instertarAula(aula);
+			controlador.insertarAula(aula);
 			System.out.println("Aula añadida con exito.");
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
@@ -50,12 +54,12 @@ public class IUTextual {
 	public void borrarAula() {
 		Consola.mostrarCabecera("Borrar Aula");
 		try {
-			Aula aula = new Aula(Consola.leerNombreAula());
-			List<Reserva> buscarReservas = modelo.getReservasAula(aula);
+			Aula aula = new Aula(Consola.leerNombreAula(), 69);
+			List<Reserva> buscarReservas = controlador.getReservasAula(aula);
 			if (!buscarReservas.isEmpty()) {
 				System.out.println(ERROR + "No se puede borrar un aula con reservas activas.");
 			}
-			modelo.borrarAula(aula);
+			controlador.borrarAula(aula);
 			System.out.println("Aula borrada con exito.");
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
@@ -65,8 +69,8 @@ public class IUTextual {
 	public void buscarAula() {
 		Consola.mostrarCabecera("Buscar Aula");
 		try {
-			Aula aula = new Aula(Consola.leerNombreAula());
-			aula = modelo.buscarAula(aula);
+			Aula aula = new Aula(Consola.leerNombreAula(), 69);
+			aula = controlador.buscarAula(aula);
 			if (aula != null) {
 				System.out.println("Aula encontrado con exito.");
 				System.out.println("El aula buscada es: " + aula);
@@ -80,7 +84,7 @@ public class IUTextual {
 
 	public void listarAulas() {
 		Consola.mostrarCabecera("Listar Aulas");
-		List<String> aulas = modelo.representarAulas();
+		List<String> aulas = controlador.representarAulas();
 		if (!aulas.isEmpty()) {
 			for (String aula : aulas) {
 				System.out.println(aula);
@@ -94,7 +98,7 @@ public class IUTextual {
 		Consola.mostrarCabecera("Insertar Profesor");
 		try {
 			Profesor profesor = Consola.leerProfesor();
-			modelo.insertarProfesor(profesor);
+			controlador.insertarProfesor(profesor);
 			System.out.println("Profesor registrado con exito.");
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
@@ -105,11 +109,11 @@ public class IUTextual {
 		Consola.mostrarCabecera("Borrar Profesor");
 		try {
 			Profesor profesor = new Profesor(Consola.leerNombreProfesor(), CORREO_VALIDO);
-			List<Reserva> buscarReservas = modelo.getReservasProfesor(profesor);
+			List<Reserva> buscarReservas = controlador.getReservasProfesor(profesor);
 			if (!buscarReservas.isEmpty()) {
 				System.out.println(ERROR + "No se puede borrar un profesor con reservas activas.");
 			} else {
-				modelo.borrarProfesor(profesor);
+				controlador.borrarProfesor(profesor);
 				System.out.println("Profesor borrado con exito.");
 			}
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
@@ -121,7 +125,7 @@ public class IUTextual {
 		Consola.mostrarCabecera("Buscar Profesor");
 		try {
 			Profesor profesor = new Profesor(Consola.leerNombreProfesor(), CORREO_VALIDO);
-			profesor = modelo.buscarProfesor(profesor);
+			profesor = controlador.buscarProfesor(profesor);
 			if (profesor != null) {
 				System.out.println("Profesor encontrado con exito.");
 				System.out.println("El profesor buscado es: " + profesor);
@@ -135,7 +139,7 @@ public class IUTextual {
 
 	public void listarProfesores() {
 		Consola.mostrarCabecera("Listar Profesores");
-		List<String> profesores = modelo.representarProfesores();
+		List<String> profesores = controlador.representarProfesores();
 		if (!profesores.isEmpty()) {
 			for (String profesor : profesores) {
 				System.out.println(profesor);
@@ -148,9 +152,9 @@ public class IUTextual {
 	public void realizarReserva() {
 		Consola.mostrarCabecera("Realizar Reserva");
 		try {
-			Profesor profesor = modelo.buscarProfesor(new Profesor(Consola.leerNombreProfesor(), CORREO_VALIDO));
+			Profesor profesor = controlador.buscarProfesor(new Profesor(Consola.leerNombreProfesor(), CORREO_VALIDO));
 			Reserva reserva = leerReserva(profesor);
-			modelo.realizarReserva(reserva);
+			controlador.realizarReserva(reserva);
 			System.out.println("Reserva realizada con exito.");
 		} catch (IllegalArgumentException | OperationNotSupportedException e) {
 			System.out.println(ERROR + e.getMessage());
@@ -158,7 +162,7 @@ public class IUTextual {
 	}
 
 	private Reserva leerReserva(Profesor profesor) {
-		Permanencia permanencia = new Permanencia(Consola.leerDia(), Consola.leerTramo());
+		Permanencia permanencia = Consola.leerPermanencia();
 		Aula aula = new Aula(Consola.leerAula());
 		return new Reserva(profesor, aula, permanencia);
 	}
@@ -168,7 +172,7 @@ public class IUTextual {
 		try {
 			Profesor profesor = new Profesor(NOMBRE_VALIDO, CORREO_VALIDO);
 			Reserva reserva = leerReserva(profesor);
-			modelo.anularReserva(reserva);
+			controlador.anularReserva(reserva);
 			System.out.println("Reserva anulada con exito.");
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
@@ -178,7 +182,7 @@ public class IUTextual {
 	public void listarReservas() {
 		Consola.mostrarCabecera("Listar Reservas");
 		try {
-			List<String> reservas = modelo.representarReservas();
+			List<String> reservas = controlador.representarReservas();
 			if (!reservas.isEmpty()) {
 				for (String reserva : reservas) {
 					System.out.println(reserva);
@@ -194,9 +198,9 @@ public class IUTextual {
 	public void listarReservasAula() {
 		Consola.mostrarCabecera("Listar reservas de un aula");
 		try {
-			Aula aula = new Aula(Consola.leerNombreAula());
-			List<Reserva> reservas = modelo.getReservasAula(aula);
-			if (modelo.buscarAula(aula) == null) {
+			Aula aula = new Aula(Consola.leerNombreAula(), 69);
+			List<Reserva> reservas = controlador.getReservasAula(aula);
+			if (controlador.buscarAula(aula) == null) {
 				System.out.println("El aula introducida no esta registrada.");
 			}
 			if (reservas.isEmpty()) {
@@ -211,8 +215,8 @@ public class IUTextual {
 		Consola.mostrarCabecera("Listar reservas de un profesor");
 		try {
 			Profesor profesor = new Profesor(Consola.leerNombreProfesor(), CORREO_VALIDO);
-			List<Reserva> reservas = modelo.getReservasProfesor(profesor);
-			if (modelo.buscarProfesor(profesor) == null) {
+			List<Reserva> reservas = controlador.getReservasProfesor(profesor);
+			if (controlador.buscarProfesor(profesor) == null) {
 				System.out.println("El profesor introducido no esta registrado.");
 			}
 			if (reservas.isEmpty()) {
@@ -226,8 +230,8 @@ public class IUTextual {
 	public void listarReservasPermanencia() {
 		Consola.mostrarCabecera("Listar reservas de una permanencia");
 		try {
-			Permanencia permanencia = new Permanencia(Consola.leerDia(), Consola.leerTramo());
-			List<Reserva> reservas = modelo.getReservasPermanencia(permanencia);
+			Permanencia permanencia = Consola.leerPermanencia();
+			List<Reserva> reservas = controlador.getReservasPermanencia(permanencia);
 			if (reservas.isEmpty()) {
 				System.out.println(VACIO);
 			}
@@ -239,12 +243,12 @@ public class IUTextual {
 	public void consultarDisponibilidad() {
 		Consola.mostrarCabecera("Consultar Disponibilidad");
 		try {
-			Aula aula = new Aula(Consola.leerNombreAula());
-			if (modelo.buscarAula(aula) == null) {
+			Aula aula = new Aula(Consola.leerNombreAula(), 69);
+			if (controlador.buscarAula(aula) == null) {
 				System.out.println("El aula introducida no esta registrada.");
 			} else {
-				Permanencia permanencia = new Permanencia(Consola.leerDia(), Consola.leerTramo());
-				if (modelo.consultarDisponibilidad(aula, permanencia)) {
+				Permanencia permanencia = Consola.leerPermanencia();
+				if (controlador.consultarDisponibilidad(aula, permanencia)) {
 					System.out.println("El aula " + aula + " esta disponible para la permanencia " + permanencia + ".");
 				} else {
 					System.out.println("El aula " + aula + " no esta disponible para la permanencia elegida.");

@@ -6,6 +6,7 @@ import javax.naming.OperationNotSupportedException;
 
 import org.iesalandalus.programacion.reservasaulas.modelo.dao.*;
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.*;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.Permanencia;
 
 public class ModeloReservasAulas {
 

@@ -1,14 +1,15 @@
 package org.iesalandalus.programacion.reservasaulas.vista;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.*;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.Permanencia;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.PermanenciaPorHora;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.PermanenciaPorTramo;
+import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.Tramo;
 import org.iesalandalus.programacion.utilidades.Entrada;
 
 public class Consola {
-
-	private static final DateTimeFormatter FORMATO_DIA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	/* Evitar que se cree un constructor por defecto */
 	private Consola() {
@@ -38,9 +39,10 @@ public class Consola {
 	}
 
 	public static Aula leerAula() {
-		System.out.print("Introduce el nombre del Aula: ");
-		Aula aula = new Aula(Entrada.cadena());
-		return aula;
+		String nombre = leerNombreAula();
+		System.out.print("Introduce el numero de puestos del Aula: ");
+		int puestos = Entrada.entero();
+		return new Aula(nombre, puestos);
 	}
 
 	public static String leerNombreAula() {
@@ -100,15 +102,40 @@ public class Consola {
 		do {
 			System.out.print("Introduce el dia: (1 - 31) ");
 			dia = Entrada.entero();
-		}while (dia <1 | dia >31);
+		} while (dia < 1 | dia > 31);
 		do {
 			System.out.print("Introduce el mes: (01 - 12) ");
 			mes = Entrada.entero();
-		}while (mes <1 | mes >12);
+		} while (mes < 1 | mes > 12);
 		do {
 			System.out.print("Introduce el año: (2019 - 20**) ");
 			ano = Entrada.entero();
-		}while ( ano < (LocalDate.now().getYear()));
-		return LocalDate.of(ano, mes, dia);	
+		} while (ano < (LocalDate.now().getYear()));
+		return LocalDate.of(ano, mes, dia);
+	}
+
+	public static String leerHora() {
+		System.out.print("Introduce la hora: (08:00 - 22:00) ");
+		return Entrada.cadena();
+	}
+
+	public static Permanencia leerPermanencia() {
+		if (elegirPermanencia() == 1) {
+			return new PermanenciaPorHora(leerDia(), leerHora());
+		} else {
+			return new PermanenciaPorTramo(leerDia(), leerTramo());
+		}
+	}
+
+	private static int elegirPermanencia() {
+		int opcion;
+		System.out.println("Elija el tipo de Permanencia: ");
+		System.out.println(" 1.- Permanencia por Hora. ");
+		System.out.println(" 2.- Permanencia por Tramo. ");
+		do {
+			System.out.println("Elija una opcion: ");
+			opcion = Entrada.entero();
+		} while (opcion < 1 | opcion > 2);
+		return opcion;
 	}
 }
