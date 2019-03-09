@@ -98,7 +98,7 @@ public enum Opcion {
 	};
 
 	private String mensajeAMostrar;
-	private static VistaReservasAulas vista;
+	private static IVistaReservasAulas vista;
 
 	/* Constructores */
 	private Opcion(String mensajeAMostrar) {
@@ -112,7 +112,7 @@ public enum Opcion {
 
 	public abstract void ejecutar();
 
-	protected static void setVista(VistaReservasAulas vista) {
+	protected static void setVista(IVistaReservasAulas vista) {
 		Opcion.vista = vista;
 	}
 

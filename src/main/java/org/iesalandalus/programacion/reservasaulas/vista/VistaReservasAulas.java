@@ -4,17 +4,17 @@ import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
-import org.iesalandalus.programacion.reservasaulas.controlador.ControladorReservasAulas;
+import org.iesalandalus.programacion.reservasaulas.controlador.IControladorReservasAulas;
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.*;
 import org.iesalandalus.programacion.reservasaulas.modelo.dominio.permanencia.Permanencia;
 
-public class VistaReservasAulas {
+public class VistaReservasAulas implements IVistaReservasAulas {
 
 	private static final String ERROR = "ERROR: ";
 	private static final String VACIO = "No hay reservas que listar.";
 	private static final String NOMBRE_VALIDO = "Juan Fernandez Quero";
 	private static final String CORREO_VALIDO = "correo@valido.com";
-	private ControladorReservasAulas controlador;
+	private IControladorReservasAulas controlador;
 
 	/* Constructores */
 	public VistaReservasAulas() {
@@ -22,10 +22,12 @@ public class VistaReservasAulas {
 	}
 
 	/* Metodos */
-	public void setControlador(ControladorReservasAulas controlador) {
+	@Override
+	public void setControlador(IControladorReservasAulas controlador) {
 		this.controlador = controlador;
 	}
 
+	@Override
 	public void comenzar() {
 		int ordinalOpcion;
 		do {
@@ -36,10 +38,12 @@ public class VistaReservasAulas {
 		} while (ordinalOpcion != Opcion.SALIR.ordinal());
 	}
 
+	@Override
 	public void salir() {
 		System.out.println("Adios! o/ ");
 	}
 
+	@Override
 	public void insertarAula() {
 		Consola.mostrarCabecera("Insertar Aula");
 		try {
@@ -51,6 +55,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void borrarAula() {
 		Consola.mostrarCabecera("Borrar Aula");
 		try {
@@ -58,14 +63,16 @@ public class VistaReservasAulas {
 			List<Reserva> buscarReservas = controlador.getReservasAula(aula);
 			if (!buscarReservas.isEmpty()) {
 				System.out.println(ERROR + "No se puede borrar un aula con reservas activas.");
+			} else {
+				controlador.borrarAula(aula);
+				System.out.println("Aula borrada con exito.");
 			}
-			controlador.borrarAula(aula);
-			System.out.println("Aula borrada con exito.");
 		} catch (OperationNotSupportedException | IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
 	}
 
+	@Override
 	public void buscarAula() {
 		Consola.mostrarCabecera("Buscar Aula");
 		try {
@@ -82,6 +89,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void listarAulas() {
 		Consola.mostrarCabecera("Listar Aulas");
 		List<String> aulas = controlador.representarAulas();
@@ -94,6 +102,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void insertarProfesor() {
 		Consola.mostrarCabecera("Insertar Profesor");
 		try {
@@ -105,6 +114,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void borrarProfesor() {
 		Consola.mostrarCabecera("Borrar Profesor");
 		try {
@@ -121,6 +131,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void buscarProfesor() {
 		Consola.mostrarCabecera("Buscar Profesor");
 		try {
@@ -137,6 +148,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void listarProfesores() {
 		Consola.mostrarCabecera("Listar Profesores");
 		List<String> profesores = controlador.representarProfesores();
@@ -149,6 +161,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void realizarReserva() {
 		Consola.mostrarCabecera("Realizar Reserva");
 		try {
@@ -163,10 +176,11 @@ public class VistaReservasAulas {
 
 	private Reserva leerReserva(Profesor profesor) {
 		Permanencia permanencia = Consola.leerPermanencia();
-		Aula aula = new Aula(Consola.leerAula());
+		Aula aula = controlador.buscarAula(new Aula(Consola.leerNombreAula(), 69));
 		return new Reserva(profesor, aula, permanencia);
 	}
 
+	@Override
 	public void anularReserva() {
 		Consola.mostrarCabecera("Anular una Reserva");
 		try {
@@ -179,6 +193,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void listarReservas() {
 		Consola.mostrarCabecera("Listar Reservas");
 		try {
@@ -195,6 +210,7 @@ public class VistaReservasAulas {
 		}
 	}
 
+	@Override
 	public void listarReservasAula() {
 		Consola.mostrarCabecera("Listar reservas de un aula");
 		try {
@@ -205,12 +221,17 @@ public class VistaReservasAulas {
 			}
 			if (reservas.isEmpty()) {
 				System.out.println(VACIO);
+			} else {
+				for (Reserva reserva : reservas) {
+					System.out.println(reserva);
+				}
 			}
 		} catch (IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
 	}
 
+	@Override
 	public void listarReservasProfesor() {
 		Consola.mostrarCabecera("Listar reservas de un profesor");
 		try {
@@ -221,12 +242,17 @@ public class VistaReservasAulas {
 			}
 			if (reservas.isEmpty()) {
 				System.out.println(VACIO);
+			} else {
+				for (Reserva reserva : reservas) {
+					System.out.println(reserva);
+				}
 			}
 		} catch (IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
 	}
 
+	@Override
 	public void listarReservasPermanencia() {
 		Consola.mostrarCabecera("Listar reservas de una permanencia");
 		try {
@@ -234,12 +260,17 @@ public class VistaReservasAulas {
 			List<Reserva> reservas = controlador.getReservasPermanencia(permanencia);
 			if (reservas.isEmpty()) {
 				System.out.println(VACIO);
+			} else {
+				for (Reserva reserva : reservas) {
+					System.out.println(reserva);
+				}
 			}
 		} catch (IllegalArgumentException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
 	}
 
+	@Override
 	public void consultarDisponibilidad() {
 		Consola.mostrarCabecera("Consultar Disponibilidad");
 		try {

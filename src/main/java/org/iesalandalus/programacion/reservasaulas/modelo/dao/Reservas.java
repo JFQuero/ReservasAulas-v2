@@ -81,7 +81,8 @@ public class Reservas {
 	}
 
 	private boolean esMesSiguienteOPosterior(Reserva reserva) {
-		return (reserva.getPermanencia().getDia().getMonthValue() > LocalDate.now().getMonthValue());
+		return (reserva.getPermanencia().getDia().getMonthValue() > LocalDate.now().getMonthValue())
+				|| reserva.getPermanencia().getDia().getYear() > LocalDate.now().getYear();
 	}
 
 	private float getPuntosGastadosReserva(Reserva reserva) {

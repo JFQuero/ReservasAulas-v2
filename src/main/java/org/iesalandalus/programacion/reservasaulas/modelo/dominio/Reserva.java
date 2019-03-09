@@ -99,7 +99,7 @@ public class Reserva {
 
 	@Override
 	public String toString() {
-		return String.format("[profesor=%s, aula=%s, permanencia=%s, puntos=%s]", profesor, aula,
-				permanencia, getPuntos());
+		return String.format("[profesor=%s, aula=%s, permanencia=%s, puntos=%s]", profesor, aula, permanencia,
+				getPuntos());
 	}
 }
